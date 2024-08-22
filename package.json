@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "\u0016\u001b[3~https://github.com/janunezc/jn-pdf"
+    "url": "https://github.com/janunezc/jn-pdf"
   },
   "bin": {
     "jn-pdf": "./jn-pdf.js"
