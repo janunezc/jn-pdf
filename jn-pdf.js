@@ -18,7 +18,7 @@ program
   const pwd = process.cwd();
   const folderName = path.basename(pwd);
 
-  const files = glob.sync('*.{png,jpg,jpeg,gif}', { cwd: pwd }).sort();
+  const files = glob.sync('*.{png,jpg,jpeg,gif,pdf}', { cwd: pwd }).sort();
 
   if (files.length === 0) {
     console.log('No image files found in the current directory.');
