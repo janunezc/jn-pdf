@@ -1,0 +1,32 @@
+{
+  "name": "jn-pdf",
+  "version": "1.0.0",
+  "description": "This little command line utility scans pwd and merges all image files sorted by name into a single PDF file.",
+  "main": "jn-pdf.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "\u0016\u001b[3~https://github.com/janunezc/jn-pdf"
+  },
+  "bin": {
+    "jn-pdf": "./jn-pdf.js"
+  },
+  "keywords": [
+    "PDF",
+    "IMAGE",
+    "MERGE",
+    "COMMAND",
+    "LINE",
+    "FILES"
+  ],
+  "author": "janunezc",
+  "license": "MIT",
+  "dependencies": {
+    "canvas": "^2.11.2",
+    "commander": "^12.1.0",
+    "glob": "^11.0.0",
+    "pdf-lib": "^1.17.1"
+  }
+}
