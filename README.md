@@ -8,7 +8,7 @@ A command-line utility that scans files in the current directory, sorts them by 
 You can install `jn-pdf` globally using npm:
 
 ```bash
-npm install -g jn-pdf
+npm i jn-pdf -g
 ```
 
 ## Usage
