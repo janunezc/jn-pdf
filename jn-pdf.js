@@ -2,10 +2,10 @@
 
 const fs = require('fs');
 const path = require('path');
-const { PDFDocument, rgb } = require('pdf-lib');
+const { PDFDocument } = require('pdf-lib');
 const glob = require('glob');
+const sharp = require('sharp');
 const commander = require('commander');
-const { createCanvas, loadImage } = require('canvas');
 
 const program = new commander.Command();
 
@@ -32,7 +32,7 @@ program
     const filePath = path.join(pwd, file);
 
     if (file.endsWith('.pdf')) {
-      // If the file is a PDF, embed its pages into the new PDF
+      // Handle PDF merging as before
       const existingPdfBytes = fs.readFileSync(filePath);
       const existingPdfDoc = await PDFDocument.load(existingPdfBytes);
       const copiedPages = await pdfDoc.copyPages(existingPdfDoc, existingPdfDoc.getPageIndices());
@@ -40,16 +40,25 @@ program
         pdfDoc.addPage(page);
       });
     } else {
-      // If the file is an image, embed it as before
-      const img = await loadImage(filePath);
-      const page = pdfDoc.addPage([img.width, img.height]);
-      const jpgImage = await pdfDoc.embedJpg(fs.readFileSync(filePath));
-      page.drawImage(jpgImage, {
-        x: 0,
-        y: 0,
-        width: img.width,
-        height: img.height,
-      });
+      try {
+        // Use sharp to get the dimensions of the image
+        const image = sharp(filePath);
+        const metadata = await image.metadata();
+
+        // Convert the image to a format pdf-lib can embed (JPEG or PNG)
+        const imageBuffer = await image.toFormat('jpeg').toBuffer();
+
+        const page = pdfDoc.addPage([metadata.width, metadata.height]);
+        const jpgImage = await pdfDoc.embedJpg(imageBuffer);
+        page.drawImage(jpgImage, {
+          x: 0,
+          y: 0,
+          width: metadata.width,
+          height: metadata.height,
+        });
+      } catch (error) {
+        console.error(`Failed to process image: ${filePath}. Error: ${error.message}`);
+      }
     }
   }
 
