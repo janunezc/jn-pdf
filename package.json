@@ -8,10 +8,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/janunezc/jn-pdf"
+    "url": "git+https://github.com/janunezc/jn-pdf.git"
   },
   "bin": {
-    "jn-pdf": "./jn-pdf.js"
+    "jn-pdf": "jn-pdf.js"
   },
   "keywords": [
     "PDF",
