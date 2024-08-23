@@ -1,6 +1,6 @@
 {
   "name": "jn-pdf",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "This little command line utility scans pwd and merges all image files sorted by name into a single PDF file.",
   "main": "jn-pdf.js",
   "scripts": {
