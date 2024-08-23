@@ -6,13 +6,24 @@ const { PDFDocument } = require('pdf-lib');
 const glob = require('glob');
 const sharp = require('sharp');
 const commander = require('commander');
+const packageJson = require('./package.json');
 
 const program = new commander.Command();
 
 program
-  .version('1.0.0')
+  .version(packageJson.version)
   .description('Merge images and PDFs into a single PDF file named after the current folder')
+  .option('-v, --verbose', 'Display detailed processing information')
   .parse(process.argv);
+
+// Announce the version, description, and passed parameters
+console.log(`\nDescription: ${program.description()}`);
+console.log(`Version: ${program.version()}`);
+console.log(`Passed Parameters: ${program.args.join(', ') || 'None'}`);
+
+if (program.verbose) {
+  console.log('Verbose mode enabled');
+}
 
 (async () => {
   const pwd = process.cwd();
@@ -56,6 +67,10 @@ program
           width: metadata.width,
           height: metadata.height,
         });
+
+        if (program.verbose) {
+          console.log(`Processed image: ${file}`);
+        }
       } catch (error) {
         console.error(`Failed to process image: ${filePath}. Error: ${error.message}`);
       }
@@ -66,5 +81,5 @@ program
   const outputFilePath = path.join(pwd, `${folderName}.pdf`);
   fs.writeFileSync(outputFilePath, pdfBytes);
 
-  console.log(`PDF created: ${outputFilePath}`);
+  console.log(`\nPDF created: ${outputFilePath}`);
 })();
