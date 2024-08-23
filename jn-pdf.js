@@ -3,12 +3,16 @@
 const fs = require('fs');
 const path = require('path');
 const { PDFDocument } = require('pdf-lib');
-const glob = require('glob');
+const { promisify } = require('util');
+const lruCache = require('lru-cache'); // Replacement for inflight
+const glob = require('glob'); // Ensure version 9 or later is installed
 const sharp = require('sharp');
 const commander = require('commander');
+const rimraf = require('rimraf'); // Ensure version 4 or later is installed
 const packageJson = require('./package.json');
 
 const program = new commander.Command();
+const globAsync = promisify(glob);
 
 program
   .version(packageJson.version)
@@ -29,8 +33,8 @@ if (program.verbose) {
   const pwd = process.cwd();
   const folderName = path.basename(pwd);
 
-  // Include both images and PDFs in the file selection
-  const files = glob.sync('*.{png,jpg,jpeg,gif,pdf}', { cwd: pwd }).sort();
+  // Include both images and PDFs in the file selection using glob
+  const files = await globAsync('*.{png,jpg,jpeg,gif,pdf}', { cwd: pwd }).then(res => res.sort());
 
   if (files.length === 0) {
     console.log('No image or PDF files found in the current directory.');
@@ -43,30 +47,19 @@ if (program.verbose) {
     const filePath = path.join(pwd, file);
 
     if (file.endsWith('.pdf')) {
-      // Handle PDF merging as before
       const existingPdfBytes = fs.readFileSync(filePath);
       const existingPdfDoc = await PDFDocument.load(existingPdfBytes);
       const copiedPages = await pdfDoc.copyPages(existingPdfDoc, existingPdfDoc.getPageIndices());
-      copiedPages.forEach((page) => {
-        pdfDoc.addPage(page);
-      });
+      copiedPages.forEach((page) => pdfDoc.addPage(page));
     } else {
       try {
-        // Use sharp to get the dimensions of the image
         const image = sharp(filePath);
         const metadata = await image.metadata();
-
-        // Convert the image to a format pdf-lib can embed (JPEG or PNG)
         const imageBuffer = await image.toFormat('jpeg').toBuffer();
 
         const page = pdfDoc.addPage([metadata.width, metadata.height]);
         const jpgImage = await pdfDoc.embedJpg(imageBuffer);
-        page.drawImage(jpgImage, {
-          x: 0,
-          y: 0,
-          width: metadata.width,
-          height: metadata.height,
-        });
+        page.drawImage(jpgImage, { x: 0, y: 0, width: metadata.width, height: metadata.height });
 
         if (program.verbose) {
           console.log(`Processed image: ${file}`);

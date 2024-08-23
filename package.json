@@ -24,10 +24,11 @@
   "author": "janunezc",
   "license": "MIT",
   "dependencies": {
-    "canvas": "^2.11.2",
     "commander": "^12.1.0",
-    "glob": "^11.0.0",
+    "glob": "^9.0.0",
+    "lru-cache": "^7.0.0",
     "pdf-lib": "^1.17.1",
-    "sharp": "^0.33.5"
+    "rimraf": "^4.0.0",
+    "sharp": "^0.32.0"
   }
 }
